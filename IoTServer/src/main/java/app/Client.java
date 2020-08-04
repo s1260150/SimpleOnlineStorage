@@ -57,24 +57,26 @@ public class Client extends Thread
         }
         catch(IOException e)
         {
-            System.out.println("Connection Closed");
+            System.out.println("disconnected");
         }
         catch(MyInvalidPathException e)
         {
             e.printStackTrace();
         }
-        System.out.println("Good Bye !!");
+        System.out.println("bye");
     }
 
     public void receiveFiles() throws IOException, MyInvalidPathException
     {
-        String recPath = reader.readString();
+        System.out.println("receive");
 
-        new MyFilesReader(reader).read(Paths.get(IoTServer.RESOURCES_FILE_PATH).resolveSibling(recPath));
+        String recPath = MyPaths.toString(reader.readString());
         
-        System.out.println("Rebuild Tree View");
+        System.out.println("receive path : " + recPath);
 
-        MyFile myFile = new MyFileSystem().scan(Paths.get(IoTServer.RESOURCES_FILE_PATH));
+        new MyFilesReader(reader).read(MyPaths.toPath(Paths.get(IoTServer.RESOURCES_FILE_PATH).resolveSibling(recPath)));
+
+        MyFile myFile = new MyFileSystem().scan(MyPaths.toPath(IoTServer.RESOURCES_FILE_PATH));
         Hashtable<MyFile, Object> treeData = new Hashtable<MyFile, Object>();
         treeData.put(myFile, iot.getTreeData(myFile));
         
@@ -85,31 +87,35 @@ public class Client extends Thread
 
     public void sendFiles() throws IOException, MyInvalidPathException
     {
-        String filename = reader.readString();
+        String filename = MyPaths.toString(reader.readString());
+        
+        System.out.println("send : " + filename);
 
-        Path p = Paths.get(filename).normalize();
+        Path p = MyPaths.toPath(filename).normalize();
 
         new MyFilesWriter(writer).write(p);
     }
 
     public void deleteFiles() throws IOException, MyInvalidPathException
     {
-        String filename = reader.readString();
+        String filename = MyPaths.toString(reader.readString());
 
-        System.out.println("deleteFiles filename : " + filename);
+        System.out.println("delete : " + filename);
         
-        Path p = Paths.get(filename).normalize();
+        Path p = MyPaths.toPath(filename).normalize();
 
-        if(!p.toString().equals(Paths.get(IoTServer.RESOURCES_FILE_PATH).toString()))
+        if(p.toString().equals(MyPaths.toString(IoTServer.RESOURCES_FILE_PATH)))
+        {
+            System.out.println("the root can not be removed");
+        }
+        else 
         {
             new MyFileSystem().removeAll(p);
             
-            System.out.println("Deleted : " + p);
+            System.out.println("deleted : " + p);
         }
 
-        System.out.println("Rebuild Tree View");
-
-        MyFile myFile = new MyFileSystem().scan(Paths.get(IoTServer.RESOURCES_FILE_PATH));
+        MyFile myFile = new MyFileSystem().scan(MyPaths.toPath((IoTServer.RESOURCES_FILE_PATH)));
         Hashtable<MyFile, Object> treeData = new Hashtable<MyFile, Object>();
         treeData.put(myFile, iot.getTreeData(myFile));
         
@@ -134,7 +140,7 @@ public class Client extends Thread
             }
             catch(IOException ex)
             {
-                System.out.println("server socket can't close.");
+                System.out.println("socket can't close.");
                 ex.printStackTrace();
             }
             finally

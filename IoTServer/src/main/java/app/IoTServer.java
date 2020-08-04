@@ -4,7 +4,6 @@ import java.net.*;
 import java.util.*;
 
 import javax.swing.*;
-import javax.swing.event.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
@@ -38,11 +37,6 @@ public class IoTServer
         treeData.put(x, getTreeData(x));
 
         tree = new JTree(treeData);
-        tree.addTreeSelectionListener(new TreeSelectionListener(){
-            @Override
-            public void valueChanged(TreeSelectionEvent e) {
-            }
-        });
 
         scrollPane = new JScrollPane();
         scrollPane.getViewport().setView(tree);
@@ -79,6 +73,7 @@ public class IoTServer
                         c.close();
                     }
                 }
+                System.out.println("finish");
             }
         });
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -98,7 +93,7 @@ public class IoTServer
             {
                 //サーバー側ソケット作成
                 Socket clientSock = serverSock.accept();
-                System.out.println("Welcome!");
+                System.out.println("welcome!");
 
                 Client cc= new Client(this, clientSock);
                 clients.add(cc);
@@ -113,6 +108,8 @@ public class IoTServer
     
     public void buildTreeView(Hashtable<MyFile, Object> table)
     {
+        System.out.println("rebuild file tree");
+
         scrollPane.remove(tree);
         tree = new JTree(table);
         scrollPane.getViewport().setView(tree);

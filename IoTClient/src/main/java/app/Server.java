@@ -60,9 +60,9 @@ public class Server {
                 return;
             }
 
-            System.out.println("送信します");
-            System.out.println("レシーブディレクトリ : " + recPath);
-            System.out.println("送信対象 : " + path.toString());
+            System.out.println("send : " + source);
+            System.out.println("distination directory : " + recPath);
+            System.out.println("send object : " + path.toString());
 
             writer.writeString(MSG_SEND_FILES);
 
@@ -83,6 +83,8 @@ public class Server {
     {
         try
         {
+            System.out.println("receive : " + source);
+
             writer.writeString(MSG_REQUEST_FILES);
 
             writer.writeString(source);
@@ -98,13 +100,13 @@ public class Server {
     {
         try
         {
+            System.out.println("delete : " + source);
+
             writer.writeString(MSG_DELETE_FILES);
 
             writer.writeString(source);
 
             String fileString = reader.readString();
-
-            System.out.println(fileString);
             
             rebuildTreeView(fileString);
         }
@@ -115,6 +117,7 @@ public class Server {
 
     public void rebuildTreeView(String fileString)
     {
+        System.out.println("rebuild file tree");
         System.out.println(fileString);
 
         MyFile myFile = MyFile.build(fileString);
@@ -141,6 +144,7 @@ public class Server {
             try
             {
                 sock.close();
+                System.out.println("finish");
             }
             catch(IOException e)
             {

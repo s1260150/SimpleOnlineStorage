@@ -3,7 +3,6 @@ package app;
 import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Hashtable;
@@ -13,16 +12,15 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.*;
 
-import java.awt.*;
 import java.awt.event.*;
 
 import com.mylib.*;
 
 
-public class IoTClient{
-
-    //public static String HOST = "192.168.10.120";
-    public static String HOST = "localhost";
+public class IoTClient
+{
+    public static String HOST = "192.168.10.120";
+    //public static String HOST = "localhost";
     public static final int PORT    = 50576;
 
     private Server server;
@@ -60,8 +58,7 @@ public class IoTClient{
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode)tree.getLastSelectedPathComponent();
 
                 if (node != null){
-                    String fname = ((MyFile)node.getUserObject()).getPath();
-                    System.out.println(fname);
+                    String fname = ((MyFile)node.getUserObject()).toPath().toString();
                     
                     server.receiveFiles(fname);
                 }
@@ -83,10 +80,10 @@ public class IoTClient{
                     MyFile mFile = (MyFile)node.getUserObject();
                     if(mFile.isFile())
                     {
-                        JOptionPane.showMessageDialog(frame, "送信先を正しく指定してください", "Warn", JOptionPane.WARNING_MESSAGE);
+                        JOptionPane.showMessageDialog(frame, "Please specify the correct destination", "Warn", JOptionPane.WARNING_MESSAGE);
                         return;
                     }
-                    recPath = mFile.getPath();
+                    recPath = mFile.toPath().toString();
                 }
                 else
                 {
@@ -108,7 +105,7 @@ public class IoTClient{
                 }
                 else if (selected == JFileChooser.ERROR_OPTION)
                 {
-                    System.out.println("エラー又は取消しがありました");
+                    System.out.println("FileChooser : error");
                     return;
                 }
             }
@@ -125,12 +122,11 @@ public class IoTClient{
 
                 if (node != null){
                     MyFile mFile = (MyFile)node.getUserObject();
-                    String fname = (mFile).getPath();
-                    System.out.println(fname);
+                    String fname = mFile.toPath().toString();
                     
-                    if(rootFile.getPath().equals(mFile.getPath()))
+                    if(rootFile.toPath().toString().equals(mFile.toPath().toString()))
                     {
-                        JOptionPane.showMessageDialog(frame, "ルートディレクトリは削除できません", "Warn", JOptionPane.WARNING_MESSAGE);
+                        JOptionPane.showMessageDialog(frame, "Can not remove root directory", "Warn", JOptionPane.WARNING_MESSAGE);
                         return;
                     }
                     server.deleteFiles(fname);
@@ -150,7 +146,7 @@ public class IoTClient{
         });
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(640, 480);
-        frame.setTitle("タイトル");
+        frame.setTitle("Title");
         frame.setVisible(true);
     }
 
